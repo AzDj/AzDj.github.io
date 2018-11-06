@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>基于docker部署zabbix | AzDj</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">基于docker部署zabbix</h1><a id="logo" href="/.">AzDj</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">基于docker部署zabbix</h1><div class="post-meta">Nov 6, 2018</div><a class="disqus-comment-count" href="/2018/11/06/基于docker部署zabbix/#vcomment"><span class="valine-comment-count" data-xid="/2018/11/06/基于docker部署zabbix/"></span><span> 条评论</span></a><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#zabbix-server-部署阶段"><span class="toc-number">1.</span> <span class="toc-text">zabbix-server 部署阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#启动-MySQL-数据库"><span class="toc-number">1.1.</span> <span class="toc-text">启动 MySQL 数据库</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zabbix-agent-install"><span class="toc-number"></span> <span class="toc-text">zabbix-agent install</span></a></div></div><div class="post-content"><p>安装过程与流程转载自[基于 docker 部署 zabbix 及客户端批量部署]<a href="https://blog.rj-bai.com/post/144.html#menu_index_7" target="_blank" rel="noopener">https://blog.rj-bai.com/post/144.html#menu_index_7</a><br><a id="more"></a></p>
+<h2 id="zabbix-server-部署阶段"><a href="#zabbix-server-部署阶段" class="headerlink" title="zabbix-server 部署阶段"></a>zabbix-server 部署阶段</h2><p>所需用到的有以下几个组件，也可以根据你个人添加、使用其他的</p>
+<table>
+<thead>
+<tr>
+<th>组件名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据库</td>
+<td>MySQL或是PostgreSQL</td>
+</tr>
+<tr>
+<td>Zabbix Java gateway</td>
+<td>Java 管理扩展，可以不添加</td>
+</tr>
+<tr>
+<td>Zabbix server</td>
+<td>zabbix 服务端</td>
+</tr>
+<tr>
+<td>zabbix-web</td>
+<td>与 MySQL 服务器实例和 Zabbix server 实例关联</td>
+</tr>
+<tr>
+<td>zabbix-agent</td>
+<td>zabbix 客户端</td>
+</tr>
+</tbody>
+</table>
+<h3 id="启动-MySQL-数据库"><a href="#启动-MySQL-数据库" class="headerlink" title="启动 MySQL 数据库"></a>启动 MySQL 数据库</h3><p>编写Dockerfile</p>
+<p>数据库同样选择MySQL，还是得写Dockerfile，改一下时区，字符集也要改一下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@zabbix ~]<span class="comment"># mkdir /data/docker/mysql -p</span></span><br><span class="line">[root@zabbix /data/docker/mysql]<span class="comment"># vim Dockerfile</span></span><br><span class="line">FROM mysql:5.7</span><br><span class="line">ENV LANG en_US.utf8</span><br><span class="line">RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; <span class="built_in">echo</span> Asia/Shanghai &gt; /etc/timezone</span><br></pre></td></tr></table></figure>
+<p>然后构建一下试试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@zabbix /data/docker/mysql]<span class="comment"># docker build -t centos-mysql5.7 .</span></span><br><span class="line">[root@zabbix /data/docker/mysql]<span class="comment"># docker images</span></span><br><span class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">debian-mysql5.7     latest              3d3c7dc9608c        14 seconds ago      372MB</span><br><span class="line">mysql               5.7                 563a026a1511        3 weeks ago         372MB</span><br></pre></td></tr></table></figure>
+<p>镜像有了，可以启动了。<br>启动容器</p>
+<p>[root@zabbix ~]# docker run –hostname mysql –name debian-mysql-5.7 -t \</p>
+<blockquote>
+<p>-e MYSQL_USER=”zabbix” \<br>-e MYSQL_DATABASE=”zabbix” \<br>-e MYSQL_PASSWORD=”passwd” \<br>-e MYSQL_ROOT_PASSWORD=”passwd” \<br>-v /data/mysql:/var/lib/mysql:rw \<br>-d debian-mysql5.7<br>9a98a2ba0896a8a146d515764d2d8eef4bc32a9f0dbea445c360fab5668a5cfe<br>[root@zabbix ~]# docker ps<br>CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                 NAMES<br>9a98a2ba0896        debian-mysql5.7     “docker-entrypoint.s…”   3 seconds ago       Up 2 seconds        3306/tcp, 33060/tcp   debian-mysql-5.7</p>
+</blockquote>
+<p>变量说明<br>变量<br>MYSQL_USER    启动时要添加的用户<br>MYSQL_DATABASE    启动时要创建的数据库<br>MYSQL_PASSWORD    指定添加用的的密码<br>MYSQL_ROOT_PASSWORD    root 用户的密码</p>
+<p>到此MySQL完成<br>启动 Zabbix Java gateway<br>编写Dockerfile</p>
+<p>这个看个人，如果不监控java应用服务器可以不安装这个，还是得写Dockerfile，改一下时区和编码。</p>
+<p>[root@zabbix /data/docker/java-gateway]# cat Dockerfile<br>FROM zabbix/zabbix-java-gateway:latest<br>ENV LANG en_US.utf8<br>RUN apk add -U tzdata<br>RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; \<br>    echo Asia/Shanghai &gt; /etc/timezone \<br>[root@zabbix /data/docker/java-gateway]# docker build -t zabbix-java-gateway .<br>[root@zabbix /data/docker/java-gateway]# docker images<br>REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE<br>zabbix-java-gateway          latest              7948dffa9af0        35 seconds ago      80.1MB</p>
+<p>启动容器</p>
+<p>需要映射一下10052端口</p>
+<p>[root@zabbix ~]# docker run –hostname zabbix-java-gateway \</p>
+<blockquote>
+<p>–name zabbix-java-gateway -t \<br>-p 10052:10052 \<br>-d zabbix-java-gateway<br>5e2434e7a4c6f3f947e6408ff5a90097e802c6a36282c36ce7e4cd5819474f7a<br>[root@zabbix ~]# docker ps<br>CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                      NAMES<br>5e2434e7a4c6        zabbix-java-gateway   “docker-entrypoint.sh”   9 seconds ago       Up 7 seconds        0.0.0.0:10052-&gt;10052/tcp   zabbix-java-gateway<br>9a98a2ba0896        debian-mysql5.7       “docker-entrypoint.s…”   33 minutes ago      Up 33 minutes       3306/tcp, 33060/tcp        debian-mysql-5.7</p>
+</blockquote>
+<p>这个也算完事了<br>启动 Zabbix server<br>编写Dockerfile</p>
+<p>[root@zabbix /data/docker/zabbix-server]# cat Dockerfile<br>FROM zabbix/zabbix-server-mysql:latest<br>ENV LANG en_US.utf8<br>RUN apk add -U tzdata<br>RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; \<br>    echo Asia/Shanghai &gt; /etc/timezone \<br>[root@zabbix /data/docker/zabbix-server]# docker build -t zabbix-server .<br>[root@zabbix /data/docker/zabbix-server]# docker images<br>REPOSITORY                   TAG                 IMAGE ID            CREATED              SIZE<br>zabbix-server                latest              531aa3116f61        About a minute ago   62.3MB</p>
+<p>启动容器</p>
+<p>需要做的事情，映射10051端口，指定数据库服务器，连接MySQL和zabbix-java-gateway容器，开撸。</p>
+<p>[root@zabbix ~]# docker run –name zabbix-server -t \</p>
+<blockquote>
+<p>-p 10051:10051 \<br>–hostname zabbix-server \<br>-e DB_SERVER_HOST=”debian-mysql-5.7” \<br>-e MYSQL_DATABASE=”zabbix” \<br>-e MYSQL_USER=”zabbix” \<br>-e MYSQL_PASSWORD=”passwd” \<br>-e MYSQL_ROOT_PASSWORD=”passwd” \<br>-e ZBX_JAVAGATEWAY=”zabbix-java-gateway” \<br>–link debian-mysql-5.7:mysql \<br>–link zabbix-java-gateway:zabbix-java-gateway \<br>-d zabbix-server<br>a45ef352cc68ea8f6a1d53b768dbdd0405e8adbe4ffd9ec155b2eb3ae269f5cb<br>[root@zabbix ~]# docker ps<br>CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                      NAMES<br>a45ef352cc68        zabbix-server         “docker-entrypoint.sh”   9 minutes ago       Up 8 minutes        0.0.0.0:10051-&gt;10051/tcp   zabbix-server</p>
+</blockquote>
+<p>变量说明<br>变量<br>DB_SERVER_HOST    指定 MySQL 或 PostgreSQL 服务器的 IP 或 DNS 名称<br>MYSQL_DATABASE    zabbix 数据库名称<br>MYSQL_USER    数据库用户，默认是 zabbix<br>MYSQL_PASSWORD    zabbix 数据库密码，默认 zabbix<br>ZBX_JAVAGATEWAY    是否启用 Zabbix Java gateway，默认 false</p>
+<p>最后一步，启动zabbix-web<br>启动zabbix-web<br>编写Dockerfile</p>
+<p>[root@zabbix /data/docker/zabbix-web]# cat Dockerfile<br>FROM zabbix/zabbix-web-nginx-mysql:latest<br>ENV LANG en_US.utf8<br>RUN apk add -U tzdata<br>RUN sed -i s#Europe/Riga#Asia/Shanghai#g /usr/bin/docker-entrypoint.sh &amp;&amp; \<br>    ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; \<br>    echo Asia/Shanghai &gt; /etc/timezone \<br>[root@zabbix /data/docker/zabbix-web]# docker build -t zabbix-web .<br>[root@zabbix /data/docker/zabbix-web]# docker images<br>REPOSITORY                      TAG                 IMAGE ID            CREATED              SIZE<br>zabbix-web                      latest              6ff51e2f0545        About a minute ago   164MB</p>
+<p>启动容器</p>
+<p>需要做的事情，映射 80 端口到宿主机，连接数据库，连接zabbix-server容器，开撸开撸。</p>
+<p>[root@zabbix ~]# docker run –name zabbix-web -t \</p>
+<blockquote>
+<p>-p 80:80 \<br>–hostname zabbix-web \<br>-e DB_SERVER_HOST=”debian-mysql-5.7” \<br>-e MYSQL_DATABASE=”zabbix” \<br>-e MYSQL_USER=”zabbix” \<br>-e MYSQL_PASSWORD=”passwd” \<br>-e MYSQL_ROOT_PASSWORD=”passwd” \<br>–link debian-mysql-5.7:mysql \<br>–link zabbix-server:zabbix-server \<br>-d zabbix-web<br>f0c33f227992ce220730da9454df2f354565ed0b3d0813513a87797c2b752702<br>[root@zabbix ~]# docker ps<br>CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                         NAMES<br>f0c33f227992        zabbix-web            “docker-entrypoint.sh”   13 seconds ago      Up 10 seconds       0.0.0.0:80-&gt;80/tcp, 443/tcp   zabbix-web</p>
+</blockquote>
+<p>最后看一眼正在运行的容器。</p>
+<p>一共四个就对了，然后就可以打开你的服务器 IP 看效果了，重点是这里撒，看上去是没啥子问题，手动加个主机试试，看看能不能监控到。</p>
+<p>zabbix 客户配置</p>
+<p>这个是需要加一个客户端的撒，先装一个试试能不能监控到，网页操作全部略过，从安装客户端开始。<br>安装 zabbix-agent</p>
+<p>emmmm，这个还是用官方的yum源吧，很简单，两条命令解决</p>
+<p>[root@nginx ~]# rpm -i <a href="https://repo.zabbix.com/zabbix/3.4/rhel/7/x86_64/zabbix-release-3.4-2.el7.noarch.rpm" target="_blank" rel="noopener">https://repo.zabbix.com/zabbix/3.4/rhel/7/x86_64/zabbix-release-3.4-2.el7.noarch.rpm</a><br>warning: /var/tmp/rpm-tmp.AbbbMW: Header V4 RSA/SHA512 Signature, key ID a14fe591: NOKEY<br>[root@nginx ~]# yum -y install zabbix-agent </p>
+<p>装完之后改一下配置文件，指定一下zabbix-server的地址，UserParameter顺便也开启一下吧，以后肯定要添加自定义监控的，就这样</p>
+<p>[root@nginx ~]# vim /etc/zabbix/zabbix_agentd.conf<br>Server=172.31.223.165<br>UnsafeUserParameters=1<br>Include=/etc/zabbix/zabbix_agentd.d/*.conf<br>[root@nginx ~]# systemctl start zabbix-agent</p>
+<p>网页看效果</p>
+<p>可以检测到主机，顺便提一下，在宿主机上安装</p>
+<p>然后看一眼图形，也有数据了。</p>
+<p>然后发现了两个问题，第一个，如果容器想要去监控宿主机，请编辑宿主机的zabbix_agentd.conf，将Server的地址改为容器的 IP，否则不通。</p>
+<p>第二个就是zabbix监控时间和系统时间对不上，现在是下午，估计是PHP时区这里有问题，现在去改一下。</p>
+<p>[root@zabbix ~]# docker exec -it zabbix-web /bin/bash<br>bash-4.4# vi /etc/php7/conf.d/99-zabbix.ini<br>; date.timezone=Europe/Riga<br>date.timezone=Asia/Shanghai<br>[root@zabbix ~]# docker restart zabbix-web</p>
+<p>我本以为这样就行了，但是重启容器之后我改的Asia/Shanghai又变回了Europe/Riga，然后我试着传了一下文件，重启还是会变，估计是有系统变量，执行env看了一下没找到，然后看了一眼启动默认命令，是执行了一个脚本，我看了一下，发现了这个。</p>
+<p>改一下这个试试，改成Asia/Shanghai，文件路径/usr/bin/docker-entrypoint.sh</p>
+<p>重启一下容器看效果</p>
+<p>重启前</p>
+<p>重启后</p>
+<p>顺便改了一下上文zabbix-web的Dockerfile, 使用sed替换了一下脚本内容，所以现在不存在这个问题。最后，那就是zabbix-agent安装的问题，还有 20 多个服务器没安装zabbix-agent，一个一个去装不太现实，zabbix暂时退场，ansible上线。<br>zabbix-agent 批量安装</p>
+<p>ansible这一块安装配置就不写了，直接撸playbook，其实也很简单，需要做的事情，1. 添加zabbix官方源，2. 安装zabbix-agent客户端，3. 传输已经写好的zabbix_agentd.conf，4. 启动服务，大概就是这样，开撸。</p>
+<p>[root@ansible ~]# vim zabbix_agent.yml</p>
+<h1 id="zabbix-agent-install"><a href="#zabbix-agent-install" class="headerlink" title="zabbix-agent install"></a>zabbix-agent install</h1><ul>
+<li>hosts: all<br>tasks:<ul>
+<li>name: add zabbix-agent repo<br>yum: name=<a href="https://repo.zabbix.com/zabbix/3.4/rhel/7/x86_64/zabbix-release-3.4-2.el7.noarch.rpm" target="_blank" rel="noopener">https://repo.zabbix.com/zabbix/3.4/rhel/7/x86_64/zabbix-release-3.4-2.el7.noarch.rpm</a><pre><code>state=installed
+</code></pre></li>
+<li>name: install zabbix-agent<br>yum: name=zabbix-agent<pre><code>state=installed
+</code></pre></li>
+<li>name: copy zabbix_agent.conf to /etc/zabbix/<br>copy: src=/root/zabbix_agentd.conf<pre><code>dest=/etc/zabbix/
+backup=yes
+</code></pre></li>
+<li>name: start zabbix-agent<br>systemd: state=started<pre><code>name=zabbix-agent
+enabled=yes
+</code></pre>[root@ansible ~]# ansible-playbook zabbix_agent.yml</li>
+</ul>
+</li>
+</ul>
+<p>changed=1&amp;2的是我下午搞得那两个，全部安装成功，下一步就是在zabbix创建自动发现了。<br>最终结果</p>
+<p>自动发现很简单，自行百度去吧，懒得贴图了，最终结果。</p>
+<p>这只是部署了一套最基础的监控系统，熟悉操作的话几分钟就能完成，现在还没有添加任何的自定义监控，添加自定义监控这块的话还是很麻烦，暂时没什么好办法，毕竟各个服务的集群要监控的东西都不一样，想想都烦，暂时就这样吧，邮件报警忽略。</p>
+</div><div class="tags"><a href="/tags/docker/">docker</a><a href="/tags/zabbix/">zabbix</a></div><div class="post-nav"><a class="next" href="/2018/11/06/docker-批量操作/">docker 批量操作</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'true' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'Qq3TXn4kkYB1Y5amjdYD5pQM-gzGzoHsz',
+  appKey:'lcphlalpyrDQNucYsK1wLn6D',
+  placeholder:'',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://azdj.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/安装/" style="font-size: 15px;">安装</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/ITSM/" style="font-size: 15px;">ITSM</a> <a href="/tags/IT服务管理/" style="font-size: 15px;">IT服务管理</a> <a href="/tags/jenkins/" style="font-size: 15px;">jenkins</a> <a href="/tags/ansible/" style="font-size: 15px;">ansible</a> <a href="/tags/Github/" style="font-size: 15px;">Github</a> <a href="/tags/docker/" style="font-size: 15px;">docker</a> <a href="/tags/jumpserver/" style="font-size: 15px;">jumpserver</a> <a href="/tags/跳板机/" style="font-size: 15px;">跳板机</a> <a href="/tags/zabbix/" style="font-size: 15px;">zabbix</a> <a href="/tags/java/" style="font-size: 15px;">java</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/11/06/基于docker部署zabbix/">基于docker部署zabbix</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/06/docker-批量操作/">docker 批量操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/06/ansible安装jenkins/">ansible安装jenkins</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/22/ITSM/">ITSM</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/15/安装java/">安装java</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/13/HelloEveryone/">HelloEveryone</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/13/jumpserver(跳板机)安装/">jumpserver 堡垒机安装</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/welliamcao/OpsManage" title="自动化运维平台" target="_blank">自动化运维平台</a><ul></ul><a href="https://github.com/kurolz/Books" title="运维之道" target="_blank">运维之道</a><ul></ul><a href="https://www.haomwei.com/technology/maupassant-hexo.html" title="大道至简-屠城hexo主题" target="_blank">大道至简-屠城hexo主题</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">AzDj.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/javascript" color="0,0,0" opacity="0.5" zIndex="-2" count="50" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
