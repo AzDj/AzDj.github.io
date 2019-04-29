@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>pyenv | AzDj</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.1"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">pyenv</h1><a id="logo" href="/.">AzDj</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">pyenv</h1><div class="post-meta">Apr 29, 2019</div><a class="disqus-comment-count" href="/2019/pyenv.html#vcomment"><span class="valine-comment-count" data-xid="/2019/pyenv.html"></span><span> 条评论</span></a><div class="post-content"><p>基于python的多版本管理，在保留原有系统版本环境的情况下安装并使用其他python版本，同时也可以避免在开发和使用时遇到的环境污染</p>
+<p>From github:<a href="https://github.com/pyenv/pyenv" target="_blank" rel="noopener">https://github.com/pyenv/pyenv</a></p>
+<h2 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install epel-release</span><br><span class="line">yum install gcc-devel make m4 libffi-devel -y</span><br><span class="line">yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel git -y</span><br></pre></td></tr></table></figure>
+<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><ul>
+<li>下载项目到用户根目录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/pyenv/pyenv.git ~/.pyenv</span><br></pre></td></tr></table></figure>
+<ul>
+<li>配置环境</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo &apos;export PYENV_ROOT=&quot;$HOME/.pyenv&quot;&apos; &gt;&gt; ~/.bash_profile</span><br><span class="line">$ echo &apos;export PATH=&quot;$PYENV_ROOT/bin:$PATH&quot;&apos; &gt;&gt; ~/.bash_profile</span><br><span class="line">$ echo -e &apos;if command -v pyenv 1&gt;/dev/null 2&gt;&amp;1; then\n  eval &quot;$(pyenv init -)&quot;\nfi&apos; &gt;&gt; ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<ul>
+<li>加载配置文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<h2 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd $(pyenv root)</span><br><span class="line">$ git pull</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>使用<code>pyenv</code>使得本地系统更加安全以及干净</p>
+<p>常见命令</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pyenv install --list</code></td>
+<td>列出可安装版本</td>
+</tr>
+<tr>
+<td><code>pyenv install &lt;version&gt;</code></td>
+<td>安装版本</td>
+</tr>
+<tr>
+<td><code>pyenv version</code></td>
+<td>列出当前使用的版本</td>
+</tr>
+<tr>
+<td><code>pyenv versions</code></td>
+<td>列出所有已安装/使用版本</td>
+</tr>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>常见设置版本有以下几种:</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pyenv global &lt;version&gt;</code></td>
+<td>全局使用</td>
+</tr>
+<tr>
+<td><code>pyenv local &lt;version&gt;</code></td>
+<td>当前路径</td>
+</tr>
+<tr>
+<td><code>pyenv shell &lt;version&gt;</code></td>
+<td>当前窗口</td>
+</tr>
+</tbody>
+</table>
+<h2 id="使用本地包安装"><a href="#使用本地包安装" class="headerlink" title="使用本地包安装"></a>使用本地包安装</h2><p>由于<code>pyenv</code>的实质还是下载python包进行编译安装，所以我们可以在<code>pyenv</code>的目录下创建一个文件夹，让其使用本地包进行编译安装节省时间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">在安装时显示下载</span><br><span class="line">[root@node1 opt]# pyenv install 3.7.2</span><br><span class="line">Downloading Python-3.7.2.tar.xz...</span><br><span class="line">-&gt; https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz</span><br><span class="line">Installing Python-3.7.2...</span><br></pre></td></tr></table></figure>
+<p>创建缓存文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir /root/.pyenv/cache</span><br><span class="line">将对应的软件包放进去</span><br><span class="line">ls /root/.pyenv/cache</span><br><span class="line">Python-3.7.2.tar.xz</span><br></pre></td></tr></table></figure>
+<p>直接安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 ~]# pyenv install 3.7.2 -v</span><br><span class="line">Installing Python-3.7.2...</span><br></pre></td></tr></table></figure>
+<p>安装后的版本软件存放在<code>/root/.pyenv/versions</code>下</p>
+<h2 id="使用virtualenv"><a href="#使用virtualenv" class="headerlink" title="使用virtualenv"></a>使用<code>virtualenv</code></h2><p>在要同时开发多个python版本环境时，每个应用可能都需要一个“独立”的python运行环境，virtualenv就是为应用创建隔离的运行环境</p>
+<p>From github:<a href="https://github.com/pyenv/pyenv-virtualenv" target="_blank" rel="noopener">https://github.com/pyenv/pyenv-virtualenv</a></p>
+<p>命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pyenv virtualenv env # 从默认版本创建虚拟环境</span><br><span class="line">pyenv virtualenv 3.7.2 azdj-3.7.2 # 创建3.7.版本的虚拟环境</span><br><span class="line">pyenv activate azdj-3.7.2 # 激活 azdj-3.7.2 这个虚拟环境</span><br><span class="line">pyenv deactivate # 停用当前的虚拟环境</span><br></pre></td></tr></table></figure>
+<ul>
+<li>配置自动激活</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">使用pyenv local 虚拟环境名</span><br><span class="line"></span><br><span class="line">会把虚拟环境名写入当前目录的.python-version文件中</span><br><span class="line"></span><br><span class="line">关闭自动激活 -&gt; pyenv deactivate</span><br><span class="line"></span><br><span class="line">启动自动激活 -&gt; pyenv activate azdj-3.7.2</span><br><span class="line"></span><br><span class="line">pyenv local azdj-3.7.2</span><br><span class="line"></span><br><span class="line">pyenv uninstall azdj-3.7.2 # 删除 azdj-3.7.2 这个虚拟环境</span><br></pre></td></tr></table></figure>
+<p>命令<code>virtualenv</code>就可以创建一个独立的Python运行环境，我们还加上了参数<code>--no-site-packages</code>，这样，已经安装到系统Python环境中的所有第三方包都不会复制过来，这样，我们就得到了一个不带任何第三方包的“干净”的Python运行环境。</p>
+</div><div class="tags"><a href="/tags/python/">python</a><a href="/tags/pyenv/">pyenv</a></div><div class="post-nav"><a class="next" href="/2019/jumpserver简单使用.html">jumpserver简单使用</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'true' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'Qq3TXn4kkYB1Y5amjdYD5pQM-gzGzoHsz',
+  appKey:'lcphlalpyrDQNucYsK1wLn6D',
+  placeholder:'',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://azdj.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Github/" style="font-size: 15px;">Github</a> <a href="/tags/ITSM/" style="font-size: 15px;">ITSM</a> <a href="/tags/jenkins/" style="font-size: 15px;">jenkins</a> <a href="/tags/ansible/" style="font-size: 15px;">ansible</a> <a href="/tags/安装/" style="font-size: 15px;">安装</a> <a href="/tags/docker/" style="font-size: 15px;">docker</a> <a href="/tags/jumpserver/" style="font-size: 15px;">jumpserver</a> <a href="/tags/跳板机/" style="font-size: 15px;">跳板机</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/IT服务管理/" style="font-size: 15px;">IT服务管理</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/pyenv/" style="font-size: 15px;">pyenv</a> <a href="/tags/java/" style="font-size: 15px;">java</a> <a href="/tags/zabbix/" style="font-size: 15px;">zabbix</a> <a href="/tags/Let-s-Encrypt/" style="font-size: 15px;">Let's Encrypt</a> <a href="/tags/证书/" style="font-size: 15px;">证书</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/RPM/" style="font-size: 15px;">RPM</a> <a href="/tags/k8s/" style="font-size: 15px;">k8s</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/pyenv.html">pyenv</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/jumpserver简单使用.html">jumpserver简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/k8s1-13安装.html">k8s1.13安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/申请免费证书.html">申请免费证书</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/dnf.html">DNF.md</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/基于docker部署zabbix.html">基于docker部署zabbix</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/docker-批量操作.html">docker 批量操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/ansible安装jenkins.html">ansible安装jenkins</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/ITSM.html">ITSM</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/安装java.html">安装java</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/welliamcao/OpsManage" title="自动化运维平台" target="_blank">自动化运维平台</a><ul></ul><a href="https://github.com/kurolz/Books" title="运维之道" target="_blank">运维之道</a><ul></ul><a href="https://www.haomwei.com/technology/maupassant-hexo.html" title="大道至简-屠城hexo主题" target="_blank">大道至简-屠城hexo主题</a><ul></ul><a href="https://www.iyunv.com" title="爱运维网" target="_blank">爱运维网</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">AzDj.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.1" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.1" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/javascript" color="0,0,0" opacity="0.5" zIndex="-2" count="50" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.1"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.1"></script></div></body></html>
